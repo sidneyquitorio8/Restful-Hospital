@@ -48,4 +48,15 @@ public class Restful {
 		return result;
 	}
 	
+	@Path("specialtys/{sID}/doctors")
+	@GET
+	@Produces(MediaType.TEXT_HTML)
+	public String getDoctorsBySpecialty(
+			@PathParam("sID") int sID) throws Exception
+	{
+		String result = "";
+		result += dao.getDoctorsBySpecialty(sID);
+		return result;
+	}
+	
 }

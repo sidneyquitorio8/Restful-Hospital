@@ -37,6 +37,35 @@ public class RestfulDAO {
 		return result;
 	}
 	
+	public String getDoctorsBySpecialty(int specialty_id) throws Exception {
+		String result = "";
+		PreparedStatement query = null;
+		Connection conn = null;
+		
+		try{
+			conn = DatabaseConnection.getDataSource().getConnection();
+			query = conn.prepareStatement("select doctor_info.name as doctor_name, specialty_info.name as specialty_name from specialty_info left join doctor_info on specialty_info.id = doctor_info.specialty_id where specialty_info.id = ?;");
+			query.setInt(1, specialty_id);
+			ResultSet rs = query.executeQuery();
+			while(rs.next()) 
+			{
+				String specialty = rs.getString("specialty_name");
+				if(result.equalsIgnoreCase("")) {
+					result = "<h1>" + specialty + " Doctors:" + "</h1>";
+				}
+				String doctor = rs.getString("doctor_name");
+				result += "<p>" +doctor +"</p>"; 
+			}
+			
+			query.close();
+		}
+		finally {
+			if (conn!=null) conn.close();
+		}
+		
+		return result;
+	}
+	
 	public String getAllPatientInfo() throws Exception {
 		String result = "";
 		PreparedStatement query = null;
