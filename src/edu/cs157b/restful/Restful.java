@@ -59,6 +59,24 @@ public class Restful {
 		return result;
 	}
 	
+	@PUT
+	@Path("/doctors/{dID}")
+	@Produces(MediaType.TEXT_HTML)
+	public String editDoctor(@PathParam("dID") int dID, @FormParam("name") String name, @FormParam("specialty") int sID) throws Exception {
+		String result = "";
+		result += dao.editDoctor(dID, name,sID);
+		return result;
+	}
+	
+	@PUT
+	@Path("/patients/{pID}")
+	@Produces(MediaType.TEXT_HTML)
+	public String editPatient(@PathParam("pID") int pID, @FormParam("name") String name, @FormParam("record") String record) throws Exception {
+		String result = "";
+		result += dao.editPatient(pID, name,record);
+		return result;
+	}
+	
 	@POST
 	@Path("/doctors")
 	@Produces(MediaType.TEXT_HTML)
@@ -67,6 +85,26 @@ public class Restful {
 			@FormParam("specialty") int sID) throws Exception {
 		String result = "";
 		result += dao.addDoctor(name,sID);
+		return result;
+	}
+	
+	@POST
+	@Path("/patients")
+	@Produces(MediaType.TEXT_HTML)
+	public String addPatient(
+			@FormParam("name") String name,
+			@FormParam("record") String record) throws Exception {
+		String result = "";
+		result += dao.addPatient(name,record);
+		return result;
+	}
+	
+	@DELETE
+	@Path("/doctors/{dID}")
+	@Produces(MediaType.TEXT_HTML)
+	public String deleteDoctor(@PathParam("dID") int id) throws Exception {
+		String result = "";
+		result += dao.deleteDoctor(id);
 		return result;
 	}
 	

@@ -160,4 +160,216 @@ public class RestfulDAO {
 		}
         return result;
     }
+    
+    public String addPatient(String name, String medical_record) throws Exception {
+    	String result = "";
+		PreparedStatement query = null;
+		Connection conn = null;
+		
+        try {
+            conn = DatabaseConnection.getDataSource().getConnection();
+            query = conn.prepareStatement("insert into patient_info (name, medical_record) values (?, ?);");
+        	
+        	query.setString(1, name);
+        	query.setString(2, medical_record);
+
+            query.executeUpdate(); //note the new command for insert statement
+            result += "<h1> Patient added </h1>";
+        }
+        finally { if (conn!=null) conn.close(); }
+        
+        return result;
+    }
+    
+    public String deleteDoctor(int id) throws Exception {
+    	String result = "";
+		PreparedStatement query = null;
+		Connection conn = null;
+		String doctor = "";
+		
+		try{
+			conn = DatabaseConnection.getDataSource().getConnection();
+			query = conn.prepareStatement("select * from doctor_info where id = ?");
+			query.setInt(1, id);
+			ResultSet rs = query.executeQuery();
+			if(rs.next()) {
+				doctor = rs.getString("name");
+			}
+			query.close();
+		}
+		finally {
+			if (conn!=null) conn.close();
+		}
+		if(!doctor.equalsIgnoreCase("")) {
+	        try {
+	            conn = DatabaseConnection.getDataSource().getConnection();
+	            query = conn.prepareStatement("delete from doctor_info where id = ?;");
+	        	
+	        	query.setInt(1, id);
+	
+	            query.executeUpdate(); //note the new command for insert statement
+	            result += "<h1> Doctor deleted </h1>";
+	        }
+	        finally { if (conn!=null) conn.close(); }
+		}
+		else {
+			result += "<h1> No doctor found with that id </h1>";
+		}
+        return result;
+    }
+    
+    public String editDoctor(int doctor_id, String name, int specialty_id) throws Exception {
+    	String result = "";
+		PreparedStatement query = null;
+		Connection conn = null;
+		String specialty = "";
+		String doctor = "";
+
+		try{
+			conn = DatabaseConnection.getDataSource().getConnection();
+			query = conn.prepareStatement("select * from doctor_info where id = ?");
+			query.setInt(1, doctor_id);
+			ResultSet rs = query.executeQuery();
+			if(rs.next()) {
+				doctor = rs.getString("name");
+			}
+			query.close();
+		}
+		finally {
+			if (conn!=null) conn.close();
+		}
+		if(!doctor.equalsIgnoreCase("")) {
+			if(specialty_id != 0) {
+				try{
+					conn = DatabaseConnection.getDataSource().getConnection();
+					query = conn.prepareStatement("select * from specialty_info where id = ?");
+					query.setInt(1, specialty_id);
+					ResultSet rs = query.executeQuery();
+					if(rs.next()) {
+						specialty = rs.getString("name");
+					}
+					query.close();
+				}
+				finally {
+					if (conn!=null) conn.close();
+				}
+			}
+			else{
+				specialty = "don't change";
+			}
+    	}
+		else {
+			result += "<h1> No doctor with that id </h1>";
+		}
+		if(!specialty.equalsIgnoreCase("")) {
+	        try {
+	            conn = DatabaseConnection.getDataSource().getConnection();
+	            String sql = "";
+	            
+	            if(name != null && specialty_id != 0 ) {
+	            	sql = "update doctor_info set name=?, specialty_id=? where id=?";
+	            }
+	            else if(name != null) {
+	            	sql = "update doctor_info set name=? where id=?";
+	            }
+	            else if(specialty_id != 0) {
+	            	sql = "update doctor_info set specialty_id=? where id=?";
+	            }
+	            else {
+	            	return "<p>No information changed</p>";
+	            }
+	            
+	            query = conn.prepareStatement(sql);
+	            
+	            if(name != null && specialty_id != 0 ) {
+		        	query.setString(1, name);
+		        	query.setInt(2, specialty_id);
+		        	query.setInt(3, doctor_id);
+	            }
+	            else if(name != null) {
+		        	query.setString(1, name);
+		        	query.setInt(2, doctor_id);
+	            }
+	            else if(specialty_id != 0) {
+		        	query.setInt(1, specialty_id);
+		        	query.setInt(2, doctor_id);
+	            }
+	            else {
+	            	return "No information changed";
+	            }
+	
+	            query.executeUpdate(); //note the new command for insert statement
+	            result += "<h1> Doctor edited </h1>";
+	        }
+	        finally { if (conn!=null) conn.close(); }
+		}
+		else {
+			result += "<h1> No specialty with that id </h1>";
+		}
+        return result;
+    }
+    
+    public String editPatient(int patient_id, String name, String record) throws Exception {
+    	String result = "";
+		PreparedStatement query = null;
+		Connection conn = null;
+		String specialty = "";
+		String patient = "";
+
+		try{
+			conn = DatabaseConnection.getDataSource().getConnection();
+			query = conn.prepareStatement("select * from doctor_info where id = ?");
+			query.setInt(1, patient_id);
+			ResultSet rs = query.executeQuery();
+			if(rs.next()) {
+				patient = rs.getString("name");
+			}
+			query.close();
+		}
+		finally {
+			if (conn!=null) conn.close();
+		}
+		if(!patient.equalsIgnoreCase("")) {
+	        try {
+	            conn = DatabaseConnection.getDataSource().getConnection();
+	            String sql = "";
+	            if(name != null && record != null) {
+	            	sql = "update patient_info set name=?, medical_record=? where id=?";
+	            }
+	            else if(record != null) {
+	            	sql = "update patient_info set medical_record=? where id=?";
+	            }
+	            else if(name != null) {
+	            	sql = "update patient_info set name=? where id=?";
+	            }
+	            else {
+	            	return "<p> No information changed </p>";
+	            }
+	            
+	            query = conn.prepareStatement(sql);
+	        	
+	            if(name != null & record != null) {
+	            	query.setString(1, name);
+		        	query.setString(2, record);
+		        	query.setInt(3, patient_id);
+	            }
+	            else if(record != null) {
+		        	query.setString(1, record);
+		        	query.setInt(2, patient_id);
+	            }
+	            else if(name != null) {
+	            	query.setString(1, name);
+		        	query.setInt(2, patient_id);
+	            }
+	
+	            query.executeUpdate(); //note the new command for insert statement
+	            result += "<h1> Patient edited </h1>";
+	        }
+	        finally { if (conn!=null) conn.close(); }
+    	}
+		else {
+			result += "<h1> No patient with that id </h1>";
+		}
+        return result;
+    }
 }
