@@ -4,6 +4,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import javax.ws.rs.core.Response;
+
+import org.codehaus.jackson.map.ObjectMapper;
+
 import edu.cs157b.util.*;
 
 public class RestfulDAO {
@@ -119,4 +123,41 @@ public class RestfulDAO {
 		return result;
 	}
 
+    public String addDoctor(String name, int specialty_id) throws Exception {
+    	String result = "";
+		PreparedStatement query = null;
+		Connection conn = null;
+		String specialty = "";
+		
+		try{
+			conn = DatabaseConnection.getDataSource().getConnection();
+			query = conn.prepareStatement("select * from specialty_info where id = ?");
+			query.setInt(1, specialty_id);
+			ResultSet rs = query.executeQuery();
+			if(rs.next()) {
+				specialty = rs.getString("name");
+			}
+			query.close();
+		}
+		finally {
+			if (conn!=null) conn.close();
+		}
+		if(!specialty.equalsIgnoreCase("")) {
+	        try {
+	            conn = DatabaseConnection.getDataSource().getConnection();
+	            query = conn.prepareStatement("insert into doctor_info (name, specialty_id) values (?, ?);");
+	        	
+	        	query.setString(1, name);
+	        	query.setInt(2, specialty_id);
+	
+	            query.executeUpdate(); //note the new command for insert statement
+	            result += "<h1> Doctor added </h1>";
+	        }
+	        finally { if (conn!=null) conn.close(); }
+		}
+		else {
+			result += "<h1> No specialty with that id </h1>";
+		}
+        return result;
+    }
 }

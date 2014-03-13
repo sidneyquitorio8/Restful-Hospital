@@ -59,4 +59,15 @@ public class Restful {
 		return result;
 	}
 	
+	@POST
+	@Path("/doctors")
+	@Produces(MediaType.TEXT_HTML)
+	public String addDoctor(
+			@FormParam("name") String name,
+			@FormParam("specialty") int sID) throws Exception {
+		String result = "";
+		result += dao.addDoctor(name,sID);
+		return result;
+	}
+	
 }
