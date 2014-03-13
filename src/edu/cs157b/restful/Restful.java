@@ -37,7 +37,7 @@ public class Restful {
 		return result;
 	}
 	
-	@Path("patients/{pID}/doctors")
+	@Path("doctors/{pID}/patients")
 	@GET
 	@Produces(MediaType.TEXT_HTML)
 	public String getPatientsDoctors(

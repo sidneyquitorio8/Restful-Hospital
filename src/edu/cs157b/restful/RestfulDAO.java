@@ -19,17 +19,17 @@ public class RestfulDAO {
 		
 		try{
 			conn = DatabaseConnection.getDataSource().getConnection();
-			query = conn.prepareStatement("select patient_info.name as patient_name, doctor_info.name as doctor_name from patient_info left join appointment_request on patient_info.id = appointment_request.patient_id left join doctor_info on appointment_request.doctor_id = doctor_info.id where patient_info.id = ?;");
+			query = conn.prepareStatement("select patient_info.name as patient_name, doctor_info.name as doctor_name from patient_info left join appointment_request on patient_info.id = appointment_request.patient_id left join doctor_info on appointment_request.doctor_id = doctor_info.id where doctor_info.id = ?;");
 			query.setInt(1, patient_id);
 			ResultSet rs = query.executeQuery();
 			while(rs.next()) 
 			{
-				String patient = rs.getString("patient_name");
-				if(result.equalsIgnoreCase("")) {
-					result = "<h1>" + patient + "'s Doctors:" + "</h1>";
-				}
 				String doctor = rs.getString("doctor_name");
-				result += "<p>" +doctor +"</p>"; 
+				if(result.equalsIgnoreCase("")) {
+					result = "<h1>" + doctor + "'s Patients:" + "</h1>";
+				}
+				String patient = rs.getString("patient_name");
+				result += "<p>" +patient +"</p>"; 
 			}
 			
 			query.close();
